@@ -1,0 +1,12 @@
+rootProject.name = 'credi-ya-loans'
+
+include ':applications:app-loans'
+include ':applications:exception'
+include ':applications:port:in'
+include ':applications:service'
+
+include ':domain:model'
+include ':domain:port:out'
+
+include ':infrastructure:adapter:drivin:web'
+include ':infrastructure:adapter:driven:persistence'

@@ -1,0 +1,33 @@
+plugins {
+    id 'java'
+}
+
+group = 'com.crediya.infrastructure.adapter.driven'
+version = '0.0.1-SNAPSHOT'
+
+java {
+    sourceCompatibility = '17'
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation project(':domain:port:out')
+    implementation project(':domain:model')
+
+    implementation 'org.springframework.boot:spring-boot-starter-data-r2dbc'
+
+    implementation 'org.postgresql:r2dbc-postgresql'
+
+    runtimeOnly 'com.h2database:h2'
+    runtimeOnly 'io.r2dbc:r2dbc-h2'
+
+    implementation 'org.mapstruct:mapstruct:1.5.5.Final'
+    annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.5.Final'
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}
