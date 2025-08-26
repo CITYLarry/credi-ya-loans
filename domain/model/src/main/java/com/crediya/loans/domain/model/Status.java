@@ -44,4 +44,19 @@ public class Status {
     public String getDescription() {
         return description;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Status status = (Status) o;
+        return java.util.Objects.equals(id, status.id) &&
+                java.util.Objects.equals(name, status.name) &&
+                java.util.Objects.equals(description, status.description);
+    }
+
+    @Override
+    public int hashCode() {
+        return java.util.Objects.hash(id, name, description);
+    }
 }

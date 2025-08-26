@@ -82,4 +82,22 @@ public class LoanType {
     public boolean isAutomaticValidation() {
         return automaticValidation;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        LoanType loanType = (LoanType) o;
+        return automaticValidation == loanType.automaticValidation &&
+                java.util.Objects.equals(id, loanType.id) &&
+                java.util.Objects.equals(name, loanType.name) &&
+                java.util.Objects.equals(minAmount, loanType.minAmount) &&
+                java.util.Objects.equals(maxAmount, loanType.maxAmount) &&
+                java.util.Objects.equals(interestRate, loanType.interestRate);
+    }
+
+    @Override
+    public int hashCode() {
+        return java.util.Objects.hash(id, name, minAmount, maxAmount, interestRate, automaticValidation);
+    }
 }

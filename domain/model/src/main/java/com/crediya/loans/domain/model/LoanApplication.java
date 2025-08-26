@@ -87,4 +87,22 @@ public class LoanApplication {
     public Long getLoanTypeId() {
         return loanTypeId;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        LoanApplication that = (LoanApplication) o;
+        return java.util.Objects.equals(id, that.id) &&
+                java.util.Objects.equals(amount, that.amount) &&
+                java.util.Objects.equals(term, that.term) &&
+                java.util.Objects.equals(customerEmail, that.customerEmail) &&
+                java.util.Objects.equals(statusId, that.statusId) &&
+                java.util.Objects.equals(loanTypeId, that.loanTypeId);
+    }
+
+    @Override
+    public int hashCode() {
+        return java.util.Objects.hash(id, amount, term, customerEmail, statusId, loanTypeId);
+    }
 }
