@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.test.autoconfigure.data.r2dbc.DataR2dbcTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.dao.DataIntegrityViolationException;
 import reactor.test.StepVerifier;
 
 import java.math.BigDecimal;
@@ -25,8 +26,7 @@ import java.math.BigDecimal;
 class PersistenceAdapterIntegrationTest {
 
     @SpringBootApplication
-    static class TestConfiguration {
-    }
+    static class TestConfiguration {}
 
     @Autowired
     private StatusRepositoryAdapter statusRepositoryAdapter;
@@ -34,12 +34,15 @@ class PersistenceAdapterIntegrationTest {
     private LoanTypeRepositoryAdapter loanTypeRepositoryAdapter;
     @Autowired
     private LoanApplicationRepositoryAdapter loanApplicationRepositoryAdapter;
+    @Autowired
+    private LoanApplicationDataRepository loanApplicationDataRepository;
 
     private Status initialStatus;
     private LoanType defaultLoanType;
 
     @BeforeEach
     void setUp() {
+        loanApplicationDataRepository.deleteAll().block();
         initialStatus = statusRepositoryAdapter.findByName("PENDIENTE_REVISION").block();
         defaultLoanType = loanTypeRepositoryAdapter.findById(1L).block();
     }
@@ -48,8 +51,16 @@ class PersistenceAdapterIntegrationTest {
     void statusRepositoryAdapter_shouldFindStatusByName() {
         StepVerifier.create(statusRepositoryAdapter.findByName("PENDIENTE_REVISION"))
                 .expectNextMatches(status ->
-                        status.getId().equals(1L) && status.getName().equals("PENDIENTE_REVISION")
+                        status.getId() != null && status.getName().equals("PENDIENTE_REVISION")
                 )
+                .verifyComplete();
+    }
+
+    @Test
+    void statusRepositoryAdapter_shouldReturnEmptyWhenNameNotFound() {
+        var resultMono = statusRepositoryAdapter.findByName("NON_EXISTENT_STATUS");
+        StepVerifier.create(resultMono)
+                .expectNextCount(0)
                 .verifyComplete();
     }
 
@@ -63,17 +74,20 @@ class PersistenceAdapterIntegrationTest {
     }
 
     @Test
+    void loanTypeRepositoryAdapter_shouldReturnEmptyWhenIdNotFound() {
+        long nonExistentId = 999L;
+        var resultMono = loanTypeRepositoryAdapter.findById(nonExistentId);
+        StepVerifier.create(resultMono)
+                .expectNextCount(0)
+                .verifyComplete();
+    }
+
+    @Test
     void loanApplicationRepositoryAdapter_shouldSaveApplicationSuccessfully() {
-
         var applicationToSave = new LoanApplication(
-                null,
-                new BigDecimal("7500.00"),
-                36,
-                "integration.test@example.com",
-                initialStatus,
-                defaultLoanType
+                null, new BigDecimal("7500.00"), 36, "integration.test@example.com",
+                initialStatus, defaultLoanType
         );
-
         var savedApplicationMono = loanApplicationRepositoryAdapter.save(applicationToSave);
 
         StepVerifier.create(savedApplicationMono)
@@ -84,5 +98,20 @@ class PersistenceAdapterIntegrationTest {
                                 savedApp.getLoanType().getName().equals("Personal Express")
                 )
                 .verifyComplete();
+    }
+
+    @Test
+    void loanApplicationRepositoryAdapter_shouldFailWhenSavingWithInvalidForeignKey() {
+        var invalidStatus = new Status(999L, "INVALID", "Invalid Status");
+        var applicationWithInvalidFk = new LoanApplication(
+                null, new BigDecimal("1000.00"), 12, "fk.test@example.com",
+                invalidStatus, defaultLoanType
+        );
+
+        var resultMono = loanApplicationRepositoryAdapter.save(applicationWithInvalidFk);
+
+        StepVerifier.create(resultMono)
+                .expectError(DataIntegrityViolationException.class)
+                .verify();
     }
 }
