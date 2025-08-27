@@ -9,7 +9,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @OpenAPIDefinition(info = @Info(
         title = "CrediYa - Authentication API",
         version = "1.0.0",
-        description = "API for user management and authentication in the CrediYa platform."
+        description = "API for loan management in the CrediYa platform."
 ))
 public class MainApplication {
     public static void main(String[] args) {
