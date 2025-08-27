@@ -49,8 +49,8 @@ class CreateLoanApplicationUseCaseTest {
         var command = new CreateLoanApplicationCommand(new BigDecimal("5000"), 12, "test@example.com", 1L);
         var loanType = new LoanType(1L, "Personal", new BigDecimal("1000"), new BigDecimal("10000"), new BigDecimal("0.1"), false);
         var initialStatus = new Status(1L, "PENDIENTE_REVISION", "Pending review");
-        var expectedApplicationToSave = new LoanApplication(null, command.amount(), command.term(), command.customerEmail(), initialStatus.getId(), loanType.getId());
-        var savedApplication = new LoanApplication(100L, command.amount(), command.term(), command.customerEmail(), initialStatus.getId(), loanType.getId());
+        var expectedApplicationToSave = new LoanApplication(null, command.amount(), command.term(), command.customerEmail(), initialStatus, loanType);
+        var savedApplication = new LoanApplication(100L, command.amount(), command.term(), command.customerEmail(), initialStatus, loanType);
 
         when(statusRepositoryPort.findByName("PENDIENTE_REVISION")).thenReturn(Mono.just(initialStatus));
         when(loanTypeRepositoryPort.findById(1L)).thenReturn(Mono.just(loanType));
