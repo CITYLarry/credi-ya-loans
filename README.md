@@ -1,4 +1,4 @@
-# CrediYa - Authentication Service
+# CrediYa - Loans Service
 
 [![Java](https://img.shields.io/badge/Java-17-orange.svg)](https://openjdk.java.net/projects/jdk/17/)
 [![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.5.5-brightgreen.svg)](https://spring.io/projects/spring-boot)
@@ -6,9 +6,11 @@
 
 ## Descripción
 
-CrediYa Authentication Service es un microservicio de autenticación y gestión de usuarios desarrollado con Spring Boot y arquitectura hexagonal. Este servicio proporciona funcionalidades para el registro y manejo de usuarios en la plataforma CrediYa.
+
+CrediYa Loans Service es un microservicio para la gestión y originación de préstamos desarrollado con Spring Boot y arquitectura hexagonal. Este servicio proporciona funcionalidades para la solicitud, evaluación y manejo de créditos en la plataforma CrediYa.
 
 ## Características
+
 
 - 🏗️ **Arquitectura Hexagonal**: Implementación de Clean Architecture con separación clara de responsabilidades
 - ⚡ **Reactive Programming**: Construido con Spring WebFlux para programación reactiva no bloqueante
@@ -20,6 +22,7 @@ CrediYa Authentication Service es un microservicio de autenticación y gestión 
 - 📊 **Lombok**: Reducción de código boilerplate
 
 ## Tecnologías
+
 
 - **Java 17**
 - **Spring Boot 3.5.5**
@@ -34,35 +37,36 @@ CrediYa Authentication Service es un microservicio de autenticación y gestión 
 
 ## Arquitectura
 
+
 El proyecto sigue una arquitectura hexagonal (ports and adapters) organizada en módulos Gradle independientes con las siguientes capas:
 
 ```
+
 ├── applications/                    # Capa de aplicación
-│   ├── app-auth/                   # Aplicación principal ejecutable
-│   ├── exception/                  # Excepciones de negocio
-│   ├── port/                       # Puertos de entrada
-│   │   └── in/                     # Puertos de entrada (use cases)
-│   └── service/                    # Implementación de casos de uso
-├── domain/                         # Capa de dominio
-│   ├── model/                      # Entidades de dominio
-│   └── port/                       # Puertos de salida
-│       └── out/                    # Puertos de salida (repositories)
-└── infrastructure/                 # Capa de infraestructura
-    └── adapter/                    # Adaptadores
-        ├── drivin/                 # Adaptadores de entrada
-        │   └── web/                # Controladores REST
-        └── driven/                 # Adaptadores de salida
-            └── persistence/        # Persistencia de datos
+│   ├── app-loans/                   # Aplicación principal ejecutable (préstamos)
+│   ├── exception/                   # Excepciones de negocio
+│   ├── port-in/                     # Puertos de entrada (use cases)
+│   └── service/                     # Implementación de casos de uso
+├── domain/                          # Capa de dominio
+│   ├── model/                       # Entidades de dominio
+│   └── port-out/                    # Puertos de salida (repositories)
+└── infrastructure/                  # Capa de infraestructura
+  └── adapter/                     # Adaptadores
+    ├── drivin/                  # Adaptadores de entrada
+    │   └── web/                 # Controladores REST
+    └── driven/                  # Adaptadores de salida
+      └── persistence/         # Persistencia de datos
 ```
 
 ### Descripción de Módulos
 
-- **applications/app-auth**: Módulo principal que contiene la aplicación ejecutable de Spring Boot
+
+- **applications/app-loans**: Módulo principal que contiene la aplicación ejecutable de Spring Boot para préstamos
 - **applications/exception**: Excepciones específicas del negocio
-- **applications/port/in**: Puertos de entrada que definen los casos de uso
+- **applications/port-in**: Puertos de entrada que definen los casos de uso
 - **applications/service**: Implementación de los casos de uso y lógica de aplicación
 - **domain/model**: Entidades de dominio con reglas de negocio
-- **domain/port/out**: Puertos de salida para persistencia y servicios externos
+- **domain/port-out**: Puertos de salida para persistencia y servicios externos
 - **infrastructure/adapter/drivin/web**: Adaptadores de entrada (controladores REST)
 - **infrastructure/adapter/driven/persistence**: Adaptadores de salida (repositorios, mappers)
 
@@ -95,38 +99,34 @@ cd crediya-auth
 
 La aplicación estará disponible en: `http://localhost:8080`
 
+
 ## Endpoints de la API
 
-### Registro de Usuario
+### Solicitud de Préstamo
 
 ```http
-POST /api/v1/users
+POST /api/v1/loans
 Content-Type: application/json
 ```
 
 **Cuerpo de la petición:**
 ```json
 {
-  "firstName": "Juan",
-  "lastName": "Pérez",
-  "email": "juan.perez@email.com",
-  "identityNumber": "12345678",
-  "phoneNumber": "+573001234567",
-  "birthDate": "1990-05-15",
-  "address": "Calle 123 #45-67",
-  "idRole": "USER",
-  "baseSalary": 3000000
+  "amount": 5000000,
+  "term": 24,
+  "applicantId": 1,
+  "purpose": "Compra de vehículo"
 }
 ```
 
 **Respuesta exitosa (201):**
 ```json
 {
-  "id": 1,
-  "firstName": "Juan",
-  "lastName": "Pérez",
-  "email": "juan.perez@email.com",
-  "message": "Usuario registrado exitosamente"
+  "id": 1001,
+  "amount": 5000000,
+  "term": 24,
+  "status": "PENDING",
+  "message": "Solicitud de préstamo registrada exitosamente"
 }
 ```
 
@@ -141,6 +141,7 @@ Una vez que la aplicación esté ejecutándose, puedes acceder a la documentaci�
 
 ### Consola H2
 
+
 La aplicación utiliza una base de datos H2 en memoria. Puedes acceder a la consola H2 para inspeccionar los datos:
 
 - **URL**: `http://localhost:8080/h2-console`
@@ -150,7 +151,8 @@ La aplicación utiliza una base de datos H2 en memoria. Puedes acceder a la cons
 
 ### Esquema de Base de Datos
 
-El esquema se inicializa automáticamente desde `src/main/resources/schema.sql`.
+
+El esquema se inicializa automáticamente desde `src/main/resources/schema.sql` del módulo correspondiente.
 
 ## Testing
 
@@ -189,18 +191,21 @@ spring:
 
 ## Validaciones de Dominio
 
-El modelo `User` incluye las siguientes validaciones:
 
-- **Email**: Formato válido de correo electrónico
-- **Salario**: Entre 0 y 15,000,000
-- **Campos obligatorios**: firstName, lastName, email, identityNumber, phoneNumber, birthDate, address, idRole
+El modelo `Loan` incluye las siguientes validaciones:
+
+- **Monto**: Entre 100,000 y 50,000,000
+- **Plazo**: Entre 6 y 60 meses
+- **Campos obligatorios**: amount, term, applicantId, purpose
 
 ## Manejo de Errores
+
 
 La aplicación maneja diferentes tipos de errores:
 
 - **400 Bad Request**: Datos de entrada inválidos
-- **409 Conflict**: Email ya existe en el sistema
+- **404 Not Found**: Solicitud o préstamo no encontrado
+- **409 Conflict**: Préstamo duplicado o conflicto de negocio
 - **500 Internal Server Error**: Errores internos del servidor
 
 ## Desarrollo
@@ -235,7 +240,7 @@ Este proyecto es parte de la plataforma CrediYa desarrollado por Pragma.
 ## Contacto
 
 - **Desarrollador**: Larry Mateo Ramirez C.
-- **Proyecto**: CrediYa Authentication Service
+- **Proyecto**: CrediYa Loans Service
 - **Fecha**: Agosto 2025
 
 ---
