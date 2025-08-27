@@ -63,13 +63,14 @@ public class CreateLoanApplicationUseCase implements CreateLoanApplicationPort {
         }
 
         log.trace("Validation successful. Creating application for email {}", command.customerEmail());
+
         LoanApplication newApplication = new LoanApplication(
                 null,
                 command.amount(),
                 command.term(),
                 command.customerEmail(),
-                initialStatus.getId(),
-                loanType.getId()
+                initialStatus,
+                loanType
         );
 
         return loanApplicationRepositoryPort.save(newApplication);

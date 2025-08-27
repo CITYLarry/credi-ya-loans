@@ -6,6 +6,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
+
 /**
  * Data Transfer Object (DTO) for the loan application response.
  */
@@ -17,6 +19,9 @@ public class LoanApplicationResponse {
 
     private Long applicationId;
     private String customerEmail;
+    private BigDecimal requestedAmount;
+    private String loanTypeName;
+    private String status;
     private String message;
 
     /**
@@ -29,6 +34,9 @@ public class LoanApplicationResponse {
         return LoanApplicationResponse.builder()
                 .applicationId(loanApplication.getId())
                 .customerEmail(loanApplication.getCustomerEmail())
+                .requestedAmount(loanApplication.getAmount())
+                .loanTypeName(loanApplication.getLoanType().getName())
+                .status(loanApplication.getStatus().getName())
                 .message("Loan application received successfully. Awaiting review.")
                 .build();
     }

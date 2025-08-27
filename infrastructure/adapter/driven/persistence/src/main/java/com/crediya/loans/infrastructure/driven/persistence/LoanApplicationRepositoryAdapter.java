@@ -31,6 +31,17 @@ public class LoanApplicationRepositoryAdapter implements LoanApplicationReposito
         var dataToSave = loanApplicationMapper.toData(loanApplication);
 
         return loanApplicationDataRepository.save(dataToSave)
-                .map(loanApplicationMapper::toDomain);
+                .map(savedData -> {
+                    // After saving, 'savedData' has the generated ID.
+                    // We create a new instance of the domain model to ensure immutability.
+                    return new LoanApplication(
+                            savedData.getId(),
+                            savedData.getAmount(),
+                            savedData.getTerm(),
+                            savedData.getCustomerEmail(),
+                            loanApplication.getStatus(),
+                            loanApplication.getLoanType()
+                    );
+                });
     }
 }

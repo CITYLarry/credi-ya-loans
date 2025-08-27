@@ -21,6 +21,8 @@ public interface LoanApplicationMapper {
      * @param loanApplicationData The persistence entity.
      * @return The corresponding LoanApplication domain model.
      */
+    @Mapping(target = "status", ignore = true)
+    @Mapping(target = "loanType", ignore = true)
     LoanApplication toDomain(LoanApplicationData loanApplicationData);
 
     /**
@@ -31,6 +33,8 @@ public interface LoanApplicationMapper {
      * @param loanApplication The domain model.
      * @return The corresponding LoanApplicationData persistence entity.
      */
+    @Mapping(source = "status.id", target = "statusId")
+    @Mapping(source = "loanType.id", target = "loanTypeId")
     @Mapping(target = "id", ignore = true)
     LoanApplicationData toData(LoanApplication loanApplication);
 }

@@ -1,6 +1,7 @@
 package com.crediya.loans.domain.model;
 
 import java.math.BigDecimal;
+import java.util.Objects;
 import java.util.regex.Pattern;
 
 /**
@@ -16,21 +17,21 @@ public class LoanApplication {
     private final BigDecimal amount;
     private final Integer term;
     private final String customerEmail;
-    private final Long statusId;
-    private final Long loanTypeId;
+    private final Status status;
+    private final LoanType loanType;
 
-    public LoanApplication(Long id, BigDecimal amount, Integer term, String customerEmail, Long statusId, Long loanTypeId) {
+    public LoanApplication(Long id, BigDecimal amount, Integer term, String customerEmail, Status status, LoanType loanType) {
         validateAmount(amount);
         validateTerm(term);
         validateCustomerEmail(customerEmail);
-        validateIds(statusId, loanTypeId);
+        validateAssociations(status, loanType);
 
         this.id = id;
         this.amount = amount;
         this.term = term;
         this.customerEmail = customerEmail;
-        this.statusId = statusId;
-        this.loanTypeId = loanTypeId;
+        this.status = status;
+        this.loanType = loanType;
     }
 
     private void validateAmount(BigDecimal amount) {
@@ -54,13 +55,9 @@ public class LoanApplication {
         }
     }
 
-    private void validateIds(Long statusId, Long loanTypeId) {
-        if (statusId == null) {
-            throw new IllegalArgumentException("Status ID cannot be null.");
-        }
-        if (loanTypeId == null) {
-            throw new IllegalArgumentException("Loan Type ID cannot be null.");
-        }
+    private void validateAssociations(Status status, LoanType loanType) {
+        Objects.requireNonNull(status, "Status cannot be null.");
+        Objects.requireNonNull(loanType, "Loan Type ID cannot be null.");
     }
 
 
@@ -80,12 +77,12 @@ public class LoanApplication {
         return customerEmail;
     }
 
-    public Long getStatusId() {
-        return statusId;
+    public Status getStatus() {
+        return status;
     }
 
-    public Long getLoanTypeId() {
-        return loanTypeId;
+    public LoanType getLoanType() {
+        return loanType;
     }
 
     @Override
@@ -97,12 +94,12 @@ public class LoanApplication {
                 java.util.Objects.equals(amount, that.amount) &&
                 java.util.Objects.equals(term, that.term) &&
                 java.util.Objects.equals(customerEmail, that.customerEmail) &&
-                java.util.Objects.equals(statusId, that.statusId) &&
-                java.util.Objects.equals(loanTypeId, that.loanTypeId);
+                java.util.Objects.equals(status, that.status) &&
+                java.util.Objects.equals(loanType, that.loanType);
     }
 
     @Override
     public int hashCode() {
-        return java.util.Objects.hash(id, amount, term, customerEmail, statusId, loanTypeId);
+        return java.util.Objects.hash(id, amount, term, customerEmail, status, loanType);
     }
 }
